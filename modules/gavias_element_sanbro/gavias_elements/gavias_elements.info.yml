@@ -1,0 +1,5 @@
+name: Gavias Elements
+type: module
+description: Gavias Elements module.
+package: gavias
+core: '8.x'
