@@ -1,3 +1,5 @@
 /sites/default/settings.php
 /.htaccess
 /sites/default/files/php/twig
+/sites/default/files/js
+/sites/default/files/css
