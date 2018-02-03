@@ -191,14 +191,30 @@ class Customer extends Person
 		if(parent::save($person_data, $customer_id))
 		{
 			if(!$customer_id || !$this->exists($customer_id))
-			{
+			{	
+				$employee_data = array(
+					'username' => $person_data['email'],
+					'password' => password_hash($person_data['phone_number'], PASSWORD_DEFAULT),
+					'hash_version' => 2,
+					'is_customer'=> 1
+				);
+				$employee_data['person_id'] = $person_data['person_id'];
 				$customer_data['person_id'] = $person_data['person_id'];
 				$success = $this->db->insert('customers', $customer_data);
+				$success = $this->db->insert('employees', $employee_data);
 			}
 			else
 			{
+				$employee_data = array(
+					'username' => $person_data['email'],
+					'password' => password_hash($person_data['phone_number'], PASSWORD_DEFAULT),
+					'hash_version' => 2,
+					'is_customer'=> 1
+				);
 				$this->db->where('person_id', $customer_id);
 				$success = $this->db->update('customers', $customer_data);
+				$this->db->where('person_id', $customer_id);
+				$success = $this->db->update('employees', $employee_data);
 			}
 		}
 
@@ -225,7 +241,9 @@ class Customer extends Person
 	public function delete($customer_id)
 	{
 		$this->db->where('person_id', $customer_id);
-
+		//delete from employee table
+		$success = $this->db->update('employees', array('deleted' => 1));
+		$this->db->where('person_id', $customer_id);
 		return $this->db->update('customers', array('deleted' => 1));
 	}
 
@@ -235,7 +253,8 @@ class Customer extends Person
 	public function delete_list($customer_ids)
 	{
 		$this->db->where_in('person_id', $customer_ids);
-
+		$success = $this->db->update('employees', array('deleted' => 1));
+		$this->db->where_in('person_id', $customer_ids);
 		return $this->db->update('customers', array('deleted' => 1));
  	}
 

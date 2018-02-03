@@ -48,7 +48,7 @@
 </div>
 
 <div class="form-group form-group-sm">	
-	<?php echo form_label($this->lang->line('common_email'), 'email', array('class'=>'control-label col-xs-3')); ?>
+	<?php echo form_label($this->lang->line('common_email'), 'email', array('class'=>'required control-label col-xs-3')); ?>
 	<div class='col-xs-8'>
 		<div class="input-group">
 			<span class="input-group-addon input-sm"><span class="glyphicon glyphicon-envelope"></span></span>
@@ -63,7 +63,7 @@
 </div>
 
 <div class="form-group form-group-sm">	
-	<?php echo form_label($this->lang->line('common_phone_number'), 'phone_number', array('class'=>'control-label col-xs-3')); ?>
+	<?php echo form_label($this->lang->line('common_phone_number'), 'phone_number', array('class'=>'required control-label col-xs-3')); ?>
 	<div class='col-xs-8'>
 		<div class="input-group">
 			<span class="input-group-addon input-sm"><span class="glyphicon glyphicon-phone-alt"></span></span>

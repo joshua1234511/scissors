@@ -14,6 +14,7 @@ class Employee extends Person
 		$this->db->from('employees');
 		$this->db->join('people', 'people.person_id = employees.person_id');
 		$this->db->where('employees.person_id', $person_id);
+		$this->db->where('employees.is_customer', 0);
 
 		return ($this->db->get()->num_rows() == 1);
 	}
@@ -25,6 +26,7 @@ class Employee extends Person
 	{
 		$this->db->from('employees');
 		$this->db->where('deleted', 0);
+		$this->db->where('is_customer', 0);
 
 		return $this->db->count_all_results();
 	}
@@ -36,6 +38,7 @@ class Employee extends Person
 	{
 		$this->db->from('employees');
 		$this->db->where('deleted', 0);
+		$this->db->where('is_customer', 0);
 		$this->db->join('people', 'employees.person_id = people.person_id');
 		$this->db->order_by('last_name', 'asc');
 		$this->db->limit($limit);
@@ -82,6 +85,7 @@ class Employee extends Person
 		$this->db->from('employees');
 		$this->db->join('people', 'people.person_id = employees.person_id');
 		$this->db->where_in('employees.person_id', $employee_ids);
+		$this->db->where('employees.is_customer', 0);
 		$this->db->order_by('last_name', 'asc');
 
 		return $this->db->get();
@@ -207,6 +211,7 @@ class Employee extends Person
 			$this->db->or_like('CONCAT(first_name, " ", last_name)', $search);
 		$this->db->group_end();
 		$this->db->where('deleted', 0);
+		$this->db->where('is_customer', 0);
 		$this->db->order_by('last_name', 'asc');
 		foreach($this->db->get()->result() as $row)
 		{
@@ -216,6 +221,7 @@ class Employee extends Person
 		$this->db->from('employees');
 		$this->db->join('people', 'employees.person_id = people.person_id');
 		$this->db->where('deleted', 0);
+		$this->db->where('is_customer', 0);
 		$this->db->like('email', $search);
 		$this->db->order_by('email', 'asc');
 		foreach($this->db->get()->result() as $row)
@@ -226,6 +232,7 @@ class Employee extends Person
 		$this->db->from('employees');
 		$this->db->join('people', 'employees.person_id = people.person_id');
 		$this->db->where('deleted', 0);
+		$this->db->where('is_customer', 0);
 		$this->db->like('username', $search);
 		$this->db->order_by('username', 'asc');
 		foreach($this->db->get()->result() as $row)
@@ -236,6 +243,7 @@ class Employee extends Person
 		$this->db->from('employees');
 		$this->db->join('people', 'employees.person_id = people.person_id');
 		$this->db->where('deleted', 0);
+		$this->db->where('is_customer', 0);
 		$this->db->like('phone_number', $search);
 		$this->db->order_by('phone_number', 'asc');
 		foreach($this->db->get()->result() as $row)
@@ -268,6 +276,7 @@ class Employee extends Person
 			$this->db->or_like('CONCAT(first_name, " ", last_name)', $search);
 		$this->db->group_end();
 		$this->db->where('deleted', 0);
+		$this->db->where('is_customer', 0);
 
 		return $this->db->get()->num_rows();
 	}
@@ -288,6 +297,7 @@ class Employee extends Person
 			$this->db->or_like('CONCAT(first_name, " ", last_name)', $search);
 		$this->db->group_end();
 		$this->db->where('deleted', 0);
+		$this->db->where('is_customer', 0);
 		$this->db->order_by($sort, $order);
 
 		if($rows > 0)
@@ -406,6 +416,17 @@ class Employee extends Person
 		return ($query->num_rows() == 1);
 	}
 
+	/*
+	Determines whether the logged in use is a customer.
+	*/
+	public function is_customer()
+	{
+
+		$query = $this->db->get_where('employees', array('person_id' => $this->session->userdata('person_id'), 'is_customer' => 1), 1);
+
+		return ($query->num_rows() == 1);
+	}
+
  	/*
 	Gets employee permission grants
 	*/
@@ -416,6 +437,8 @@ class Employee extends Person
 
 		return $this->db->get()->result_array();
 	}
+
+
 
 
 	/*

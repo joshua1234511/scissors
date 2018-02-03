@@ -3,3 +3,6 @@
 /sites/default/files/php/twig
 /sites/default/files/js
 /sites/default/files/css
+/sites/default/files/tmp
+/.gitignore
+/billing/application/config/.env

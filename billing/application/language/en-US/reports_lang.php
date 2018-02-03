@@ -46,6 +46,7 @@ $lang["reports_low_inventory_report"] = "";
 $lang["reports_more_than_zero"] = "More than zero";
 $lang["reports_name"] = "Name";
 $lang["reports_no_reports_to_display"] = "No Items to display.";
+$lang["profile_no_profile_to_display"] = "No Items to display.";
 $lang["reports_payment_type"] = "Payment Type";
 $lang["reports_payments"] = "Payments";
 $lang["reports_payments_summary_report"] = "Payments Summary Report";

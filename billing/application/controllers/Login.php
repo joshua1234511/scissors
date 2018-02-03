@@ -6,6 +6,10 @@ class Login extends CI_Controller
 	{
 		if($this->Employee->is_logged_in())
 		{
+			if($this->Employee->is_customer())
+			{
+				redirect('profile');
+			}
 			redirect('home');
 		}
 		else
@@ -44,7 +48,10 @@ class Login extends CI_Controller
 					$this->tracking_lib->track_event('Stats', 'Invoice Enable', $this->config->item('invoice_enable'));
 					$this->tracking_lib->track_event('Stats', 'Date or Time Format', $this->config->item('date_or_time_format'));
 				}
-
+				if($this->Employee->is_customer())
+				{
+					redirect('profile');
+				}
 				redirect('home');
 			}
 		}

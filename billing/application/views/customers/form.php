@@ -390,7 +390,9 @@ $(document).ready(function()
 			first_name: "required",
 			last_name: "required",
     		email:
-			{
+			{	
+				required: true,
+				email: true,	
 				remote:
 				{
 					url: "<?php echo site_url($controller_name . '/ajax_check_email')?>",
@@ -402,6 +404,7 @@ $(document).ready(function()
 					})
 				}
 			},
+			phone_number: "required",
     		account_number:
 			{
 				remote:
