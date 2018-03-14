@@ -6,3 +6,4 @@
 /sites/default/files/tmp
 /.gitignore
 /billing/application/config/.env
+/billing
