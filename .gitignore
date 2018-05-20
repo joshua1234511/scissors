@@ -5,3 +5,4 @@
 /sites/default/files/css
 /sites/default/files/tmp
 /.gitignore
+/billing/application/config/.env
