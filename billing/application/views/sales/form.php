@@ -96,13 +96,13 @@
 $(document).ready(function()
 {	
 	<?php if(!empty($sale_info['email'])): ?>
-		$("#send_invoice").click(function(event) {
+		$('#send_invoice').click(function(event) {
 			if (confirm("<?php echo $this->lang->line('sales_invoice_confirm') . ' ' . $sale_info['email'] ?>")) {
 				$.get('<?php echo site_url() . "/sales/send_pdf/" . $sale_info['sale_id']; ?>',
 					function(response) {
 						dialog_support.hide();
 						table_support.handle_submit('<?php echo site_url('sales'); ?>', response);
-					}, "json"
+					}, 'json'
 				);	
 			}
 		});
@@ -143,7 +143,7 @@ $(document).ready(function()
 		$("input[name='customer_name']").val(ui.item.label);
 	};
 
-	$("#customer_name").autocomplete(
+	$('#customer_name').autocomplete(
 	{
 		source: '<?php echo site_url("customers/suggest"); ?>',
 		minChars: 0,
@@ -165,7 +165,7 @@ $(document).ready(function()
 	});
 
 	var submit_form = function()
-	{ 
+	{
 		$(this).ajaxSubmit(
 		{
 			success: function(response)
@@ -190,13 +190,11 @@ $(document).ready(function()
 				remote:
 				{
 					url: "<?php echo site_url($controller_name . '/check_invoice_number')?>",
-					type: "POST",
-					data: $.extend(csrf_form_base(),
-					{
-						"sale_id" : <?php echo $sale_info['sale_id']; ?>,
-						"invoice_number" : function()
-						{
-							return $("#invoice_number").val();
+					type: 'POST',
+					data: $.extend(csrf_form_base(), {
+						'sale_id' : <?php echo $sale_info['sale_id']; ?>,
+						'invoice_number' : function() {
+							return $('#invoice_number').val();
 						}
 					})
 				}

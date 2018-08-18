@@ -8,7 +8,7 @@
 | 
 | 
 */ 
-$config['application_version'] = '3.2.0';
+$config['application_version'] = '3.2.3';
 
 /* 
 |-------------------------------------------------------------------------- 
@@ -358,7 +358,7 @@ $config['cache_query_string'] = FALSE;
 | https://codeigniter.com/user_guide/libraries/encryption.html
 |
 */
-$config['encryption_key'] = getenv('ENCRYPTION_KEY') ? getenv('ENCRYPTION_KEY') : '19ec3270838e1427bfe532fe01a7d8ccf8e5d342ad5d4e77dc6b7fc9e055651e';
+$config['encryption_key'] = getenv('ENCRYPTION_KEY') ? getenv('ENCRYPTION_KEY') : '24ca7d38b52014ef2ff663f970a444553691546ba2bec147d9ac38ddf8aa4964';
 
 /*
 |--------------------------------------------------------------------------
@@ -487,7 +487,7 @@ $config['csrf_token_name'] = 'csrf_ospos_v3';
 $config['csrf_cookie_name'] = 'csrf_cookie_ospos_v3';
 $config['csrf_expire'] = 7200;
 $config['csrf_regenerate'] = TRUE;
-$config['csrf_exclude_uris'] = array();
+$config['csrf_exclude_uris'] = array('login');
 
 /*
 |--------------------------------------------------------------------------

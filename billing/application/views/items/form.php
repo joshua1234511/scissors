@@ -368,7 +368,7 @@ $(document).ready(function()
 	});
 
 	var no_op = function(event, data, formatted){};
-	$("#category").autocomplete({source: "<?php echo site_url('items/suggest_category');?>",delay:10,appendTo: '.modal-content'});
+	$("#category").autocomplete({source: "<?php echo site_url('items/suggest_category');?>", delay:10, appendTo: '.modal-content'});
 
 	<?php for ($i = 1; $i <= 10; ++$i)
 	{
@@ -376,9 +376,9 @@ $(document).ready(function()
 		$("#custom" + <?php echo $i; ?>).autocomplete({
 			source:function (request, response) {
 				$.ajax({
-					type: "POST",
+					type: 'POST',
 					url: "<?php echo site_url('items/suggest_custom');?>",
-					dataType: "json",
+					dataType: 'json',
 					data: $.extend(request, $extend(csrf_form_base(), {field_no: <?php echo $i; ?>})),
 					success: function(data) {
 						response($.map(data, function(item) {
@@ -397,9 +397,9 @@ $(document).ready(function()
 
 	$("a.fileinput-exists").click(function() {
 		$.ajax({
-			type: "GET",
+			type: 'GET',
 			url: "<?php echo site_url("$controller_name/remove_logo/$item_info->item_id"); ?>",
-			dataType: "json"
+			dataType: 'json'
 		})
 	});
 
@@ -438,14 +438,12 @@ $(document).ready(function()
 				remote:
 				{
 					url: "<?php echo site_url($controller_name . '/check_item_number')?>",
-					type: "post",
-					data: $.extend(csrf_form_base(),
-					{
+					type: 'POST',
+					data: $.extend(csrf_form_base(), {
 						"item_id": "<?php echo $item_info->item_id; ?>",
-						"item_number": function()
-						{
+						"item_number": function() {
 							return $("#item_number").val();
-						},
+						}
 					})
 				}
 			},

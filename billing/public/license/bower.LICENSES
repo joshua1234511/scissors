@@ -31,17 +31,17 @@
         ],
         "homepage": "https://github.com/alexstanbury/chartist-plugin-axistitle"
     },
-    "chartist-plugin-barlabels@0.0.5": {
-        "licenses": [
-            "WTF*"
-        ],
-        "homepage": "https://github.com/mtgibbs/chartist-plugin-barlabels"
-    },
     "chartist-plugin-pointlabels@0.0.6": {
         "licenses": [
             "WTF*"
         ],
         "homepage": "https://github.com/gionkunz/chartist-plugin-pointlabels"
+    },
+    "chartist-plugin-barlabels@0.0.5": {
+        "licenses": [
+            "WTF*"
+        ],
+        "homepage": "https://github.com/mtgibbs/chartist-plugin-barlabels"
     },
     "chartist-plugin-tooltip@0.0.18": {
         "licenses": [
@@ -84,7 +84,7 @@
         ],
         "homepage": "https://github.com/mrrio/jspdf"
     },
-    "moment@2.22.0": {
+    "moment@2.22.2": {
         "licenses": [
             "MIT"
         ],
@@ -124,13 +124,6 @@
         "homepage": "https://github.com/TimSchlechter/bootstrap-tagsinput",
         "repository": "https://github.com/timschlechter/bootstrap-tagsinput"
     },
-    "html2canvas@0.4.1": {
-        "licenses": [
-            "MIT"
-        ],
-        "homepage": "https://github.com/niklasvh/html2canvas",
-        "repository": "git+ssh://git@github.com/niklasvh/html2canvas"
-    },
     "jasny-bootstrap@3.1.3": {
         "licenses": [
             "Apache-2.0",
@@ -138,6 +131,13 @@
         ],
         "homepage": "https://github.com/jasny/bootstrap",
         "repository": "git+https://github.com/jasny/bootstrap"
+    },
+    "html2canvas@0.4.1": {
+        "licenses": [
+            "MIT"
+        ],
+        "homepage": "https://github.com/niklasvh/html2canvas",
+        "repository": "git+ssh://git@github.com/niklasvh/html2canvas"
     },
     "jquery-validation@1.14.0": {
         "licenses": [

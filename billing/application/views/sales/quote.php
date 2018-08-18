@@ -73,7 +73,7 @@ if (isset($error_message))
 			?>
 			<div>&nbsp</div>
 			<?php
-			if ($this->Appconfig->get('receipt_show_company_name'))
+			if($this->Appconfig->get('receipt_show_company_name'))
 			{
 			?>
 				<div id="company_name"><?php echo $this->config->item('company'); ?></div>
@@ -108,47 +108,66 @@ if (isset($error_message))
 			<th><?php echo $this->lang->line('sales_quantity'); ?></th>
 			<th><?php echo $this->lang->line('sales_price'); ?></th>
 			<th><?php echo $this->lang->line('sales_discount'); ?></th>
-			<?php if ($item['discount'] > 0): ?>
-			<th><?php echo $this->lang->line('sales_customer_discount');?></th>
-			<?php endif; ?>
+			<?php
+			$quote_columns = 6;
+			if($discount > 0)
+			{
+				$quote_columns = $quote_columns + 1;
+				?>
+				<th><?php echo $this->lang->line('sales_customer_discount'); ?></th>
+				<?php
+			}
+			?>
 			<th><?php echo $this->lang->line('sales_total'); ?></th>
 		</tr>
 
 		<?php
 		foreach($cart as $line=>$item)
 		{
-		?>
-			<tr class="item-row">
-				<td><?php echo $item['item_number']; ?></td>
-				<td class="item-name"><textarea rows="4" cols="6"><?php echo $item['name']; ?></textarea></td>
-				<td style='text-align:center;'><textarea rows="5" cols="6"><?php echo to_quantity_decimals($item['quantity']); ?></textarea></td>
-				<td><textarea rows="4" cols="6"><?php echo to_currency($item['price']); ?></textarea></td>
-				<td style='text-align:center;'><textarea rows="4" cols="6"><?php echo $item['discount'] . '%'; ?></textarea></td>
-				<?php if ($item['discount'] > 0): ?>
-				<td style='text-align:center;'><textarea rows="4" cols="6"><?php echo to_currency($item['discounted_total'] / $item['quantity']); ?></textarea></td>
-				<?php endif; ?>
-				<td style='border-right: solid 1px; text-align:right;'><textarea rows="4" cols="6"><?php echo to_currency($item['discounted_total']); ?></textarea></td>
-			</tr>
-
-			<?php if($item['is_serialized'] || $item['allow_alt_description'] && !empty($item['description']))
+			if($item['print_option'] == PRINT_YES)
 			{
 			?>
-			<tr class="item-row">
-				<td></td>
-				<td class="item-name"  colspan = "4"><div><?php echo $item['description']; ?></div></td>
-				<td style='text-align:center;'><textarea><?php echo $item['serialnumber']; ?></textarea></td>
-			</tr>
-		<?php
+				<tr class="item-row">
+					<td><?php echo $item['item_number']; ?></td>
+					<td class="item-name"><textarea rows="4" cols="6"><?php echo $item['name']; ?></textarea></td>
+					<td style='text-align:center;'><textarea rows="5"
+															 cols="6"><?php echo to_quantity_decimals($item['quantity']); ?></textarea>
+					</td>
+					<td><textarea rows="4" cols="6"><?php echo to_currency($item['price']); ?></textarea></td>
+					<td style='text-align:center;'><textarea rows="4"
+															 cols="6"><?php echo $item['discount'] . '%'; ?></textarea></td>
+					<?php if($discount > 0): ?>
+						<td style='text-align:center;'><textarea rows="4"
+																 cols="6"><?php echo to_currency($item['discounted_total'] / $item['quantity']); ?></textarea>
+						</td>
+					<?php endif; ?>
+					<td style='border-right: solid 1px; text-align:right;'><textarea rows="4"
+																					 cols="6"><?php echo to_currency($item['discounted_total']); ?></textarea>
+					</td>
+				</tr>
+
+				<?php if($item['is_serialized'] || $item['allow_alt_description'] && !empty($item['description']))
+				{
+				?>
+					<tr class="item-row">
+						<td></td>
+						<td class="item-name" colspan="<?php echo $quote_columns-2; ?>">
+							<div><?php echo $item['description']; ?></div>
+						</td>
+						<td style='text-align:center;'><textarea><?php echo $item['serialnumber']; ?></textarea></td>
+					</tr>
+				<?php
+				}
 			}
 		}
 		?>
 
 		<tr>
-			<td class="blank" colspan="7" align="center"><?php echo '&nbsp;'; ?></td>
+			<td class="blank" colspan="<?php echo $quote_columns; ?>" align="center"><?php echo '&nbsp;'; ?></td>
 		</tr>
 
 		<tr>
-			<td colspan="4" class="blank-bottom"> </td>
+			<td colspan="<?php echo $quote_columns-3; ?>" class="blank-bottom"> </td>
 			<td colspan="2" class="total-line"><textarea rows="5" cols="6"><?php echo $this->lang->line('sales_sub_total'); ?></textarea></td>
 			<td class="total-value"><textarea rows="5" cols="6" id="subtotal"><?php echo to_currency($subtotal); ?></textarea></td>
 		</tr>
@@ -158,7 +177,7 @@ if (isset($error_message))
 		{
 		?>
 			<tr>
-				<td colspan="4" class="blank"> </td>
+				<td colspan="<?php echo $quote_columns-3; ?>" class="blank"> </td>
 				<td colspan="2" class="total-line"><textarea rows="5" cols="6"><?php echo $sales_tax['tax_group']; ?></textarea></td>
 				<td class="total-value"><textarea rows="5" cols="6" id="taxes"><?php echo to_currency_tax($sales_tax['sale_tax_amount']); ?></textarea></td>
 			</tr>
@@ -167,7 +186,7 @@ if (isset($error_message))
 		?>
 
 		<tr>
-			<td colspan="4" class="blank"> </td>
+			<td colspan="<?php echo $quote_columns-3; ?>" class="blank"> </td>
 			<td colspan="2" class="total-line"><textarea rows="5" cols="6"><?php echo $this->lang->line('sales_total'); ?></textarea></td>
 			<td class="total-value"><textarea rows="5" cols="6" id="total"><?php echo to_currency($total); ?></textarea></td>
 		</tr>
@@ -182,7 +201,7 @@ if (isset($error_message))
 			$show_giftcard_remainder |= $splitpayment[0] == $this->lang->line('sales_giftcard');
 		?>
 			<tr>
-				<td colspan="4" class="blank"> </td>
+				<td colspan="<?php echo $quote_columns-3; ?>" class="blank"> </td>
 				<td colspan="2" class="total-line"><textarea rows="5" cols="6"><?php echo $splitpayment[0]; ?></textarea></td>
 				<td class="total-value"><textarea rows="5" cols="6" id="paid"><?php echo to_currency( $payment['payment_amount'] ); ?></textarea></td>
 			</tr>
@@ -206,22 +225,24 @@ if (isset($error_message))
 		// install firefox addon in order to use this plugin
 		if (window.jsPrintSetup)
 		{
-			<?php if (!$this->Appconfig->get('print_header'))
+			<?php
+			if(!$this->Appconfig->get('print_header'))
 			{
 			?>
-			// set page header
-			jsPrintSetup.setOption('headerStrLeft', '');
-			jsPrintSetup.setOption('headerStrCenter', '');
-			jsPrintSetup.setOption('headerStrRight', '');
+				// set page header
+				jsPrintSetup.setOption('headerStrLeft', '');
+				jsPrintSetup.setOption('headerStrCenter', '');
+				jsPrintSetup.setOption('headerStrRight', '');
 			<?php
 			}
-			if (!$this->Appconfig->get('print_footer'))
+
+			if(!$this->Appconfig->get('print_footer'))
 			{
 			?>
-			// set empty page footer
-			jsPrintSetup.setOption('footerStrLeft', '');
-			jsPrintSetup.setOption('footerStrCenter', '');
-			jsPrintSetup.setOption('footerStrRight', '');
+				// set empty page footer
+				jsPrintSetup.setOption('footerStrLeft', '');
+				jsPrintSetup.setOption('footerStrCenter', '');
+				jsPrintSetup.setOption('footerStrRight', '');
 			<?php
 			}
 			?>

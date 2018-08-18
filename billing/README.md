@@ -30,6 +30,7 @@ The main features are:
 * Selectable Boostrap (Bootswatch) based UI theme
 * Mailchimp integration
 * reCAPTCHA to protect login page from brute force attacks
+* GDPR ready
 
 The software is written in PHP language, it uses MySQL (or MariaDB) as data storage back-end and has a simple but intuitive user interface.
 
@@ -38,6 +39,15 @@ It is now based on Bootstrap 3 using Bootswatch themes, and still uses CodeIgnit
 It also has improved functionality and security.
 
 Deployed to a Cloud it's a SaaS (Software as a Service) solution.
+
+DEMO
+----
+
+A demo version of the latest master version can be found on our [Demo server](https://demo.opensourcepos.org). This is a containerized install which will be reinitialized when new functionality is added to the code repository.
+
+LOGIN using
+* username: admin
+* password: pointofsale
 
 
 Installation

@@ -200,8 +200,6 @@ class Customer extends Person
 				$this->db->where('person_id', $customer_id);
 				$success = $this->db->update('customers', $customer_data);
 			}
-
-			
 		}
 
 		$this->db->trans_complete();
@@ -220,15 +218,55 @@ class Customer extends Person
 		$this->db->update('customers', array('points' => $value));
 	}
 
-
 	/*
 	Deletes one customer
 	*/
 	public function delete($customer_id)
 	{
-		$this->db->where('person_id', $customer_id);
+		$result = TRUE;
 
-		return $this->db->update('customers', array('deleted' => 1));
+		// if privacy enforcement is selected scramble customer data
+		if($this->config->item('enforce_privacy'))
+		{
+			$this->db->where('person_id', $customer_id);
+
+			$result &= $this->db->update('people', array(
+					'first_name'	=> $customer_id,
+					'last_name'		=> $customer_id,
+					'phone_number'	=> '',
+					'email'			=> '',
+					'gender'		=> NULL,
+					'address_1'		=> '',
+					'address_2'		=> '',
+					'city'			=> '',
+					'state'			=> '',
+					'zip'			=> '',
+					'country'		=> '',
+					'comments'		=> ''
+				));
+
+			$this->db->where('person_id', $customer_id);
+
+			$result &= $this->db->update('customers', array(
+					'consent'			=> 0,
+					'company_name'		=> NULL,
+					'account_number'	=> NULL,
+					'taxable'			=> 0,
+					'discount_percent'	=> 0.00,
+					'package_id'		=> NULL,
+					'points'			=> NULL,
+					'sales_tax_code'	=> 1,
+					'deleted'			=> 1
+				));
+		}
+		else
+		{
+			$this->db->where('person_id', $customer_id);
+
+			$result &= $this->db->update('customers', array('deleted' => 1));
+		}
+
+		return $result;
 	}
 
 	/*

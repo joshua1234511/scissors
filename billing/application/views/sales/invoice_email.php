@@ -72,37 +72,47 @@
 			<th><?php echo $this->lang->line('sales_quantity'); ?></th>
 			<th><?php echo $this->lang->line('sales_price'); ?></th>
 			<th><?php echo $this->lang->line('sales_discount'); ?></th>
-			<?php if ($item['discount'] > 0): ?>
-			<th><?php echo $this->lang->line('sales_customer_discount');?></th>
-			<?php endif; ?>
+			<?php
+			$invoice_columns = 6;
+			if($discount > 0)
+			{
+				$invoice_columns = $invoice_columns + 1;
+				?>
+				<th><?php echo $this->lang->line('sales_customer_discount'); ?></th>
+				<?php
+			}
+			?>
 			<th><?php echo $this->lang->line('sales_total'); ?></th>
 		</tr>
 
 		<?php
 		foreach($cart as $line=>$item)
 		{
-		?>
+			if($item['print_option'] == PRINT_YES)
+			{
+			?>
 			<tr class="item-row">
 				<td><?php echo $item['item_number']; ?></td>
 				<td class="item-name"><?php echo $item['name']; ?></td>
 				<td><?php echo to_quantity_decimals($item['quantity']); ?></td>
 				<td><?php echo to_currency($item['price']); ?></td>
-				<td><?php echo $item['discount'] .'%'; ?></td>
+				<td><?php echo $item['discount'] . '%'; ?></td>
 				<?php if ($item['discount'] > 0): ?>
-				<td><?php echo to_currency($item['discounted_total'] / $item['quantity']); ?></td>
+					<td><?php echo to_currency($item['discounted_total'] / $item['quantity']); ?></td>
 				<?php endif; ?>
 				<td class="total-line"><?php echo to_currency($item['discounted_total']); ?></td>
 			</tr>
-		<?php
+			<?php
+			}
 		}
 		?>
 
 		<tr>
-			<td colspan="7" align="center"><?php echo '&nbsp;'; ?></td>
+			<td colspan="<?php echo $invoice_columns; ?>" align="center"><?php echo '&nbsp;'; ?></td>
 		</tr>
 
 		<tr>
-			<td colspan="4" class="blank"> </td>
+			<td colspan="<?php echo $invoice_columns-3; ?>" class="blank"> </td>
 			<td colspan="2" class="total-line"><?php echo $this->lang->line('sales_sub_total'); ?></td>
 			<td id="subtotal" class="total-value"><?php echo to_currency($subtotal); ?></td>
 		</tr>
@@ -112,7 +122,7 @@
 		{
 		?>
 			<tr>
-				<td colspan="4" class="blank"> </td>
+				<td colspan="<?php echo $invoice_columns-3; ?>" class="blank"> </td>
 				<td colspan="2" class="total-line"><?php echo $sales_tax['tax_group']; ?></td>
 				<td id="taxes" class="total-value"><?php echo to_currency_tax($sales_tax['sale_tax_amount']); ?></td>
 			</tr>
@@ -121,7 +131,7 @@
 		?>
 
 		<tr>
-			<td colspan="4" class="blank"> </td>
+			<td colspan="<?php echo $invoice_columns-3; ?>" class="blank"> </td>
 			<td colspan="2" class="total-line"><?php echo $this->lang->line('sales_total'); ?></td>
 			<td id="total" class="total-value"><?php echo to_currency($total); ?></td>
 		</tr>
