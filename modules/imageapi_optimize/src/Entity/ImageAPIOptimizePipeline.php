@@ -6,17 +6,10 @@ use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityWithPluginCollectionInterface;
-use Drupal\Core\Routing\RequestHelper;
-use Drupal\Core\Site\Settings;
-use Drupal\Core\Url;
 use Drupal\imageapi_optimize\ImageAPIOptimizeProcessorPluginCollection;
 use Drupal\imageapi_optimize\ImageAPIOptimizeProcessorInterface;
 use Drupal\imageapi_optimize\ImageAPIOptimizePipelineInterface;
-use Drupal\Component\Utility\Crypt;
-use Drupal\Component\Utility\UrlHelper;
-use Drupal\Core\StreamWrapper\StreamWrapperInterface;
-use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
-use Drupal\Core\Entity\Entity\EntityViewDisplay;
+
 /**
  * Defines an image optimize pipeline configuration entity.
  *
@@ -34,7 +27,7 @@ use Drupal\Core\Entity\Entity\EntityViewDisplay;
  *     "storage" = "Drupal\imageapi_optimize\ImageAPIOptimizePipelineStorage",
  *   },
  *   admin_permission = "administer imageapi optimize pipelines",
- *   config_prefix = "processor",
+ *   config_prefix = "pipeline",
  *   entity_keys = {
  *     "id" = "name",
  *     "label" = "label"
@@ -73,7 +66,7 @@ class ImageAPIOptimizePipeline extends ConfigEntityBase implements ImageAPIOptim
    *
    * @var array
    */
-  protected $processors = array();
+  protected $processors = [];
 
   /**
    * Holds the collection of image optimize processors that are used by this image optimize pipeline.
@@ -81,6 +74,11 @@ class ImageAPIOptimizePipeline extends ConfigEntityBase implements ImageAPIOptim
    * @var \Drupal\imageapi_optimize\ImageAPIOptimizeProcessorPluginCollection
    */
   protected $processorsCollection;
+
+  /**
+   * An array of temporary files that can be deleted on destruction.
+   */
+  protected $temporaryFiles = [];
 
   /**
    * {@inheritdoc}
@@ -136,7 +134,6 @@ class ImageAPIOptimizePipeline extends ConfigEntityBase implements ImageAPIOptim
   protected static function replaceImageAPIOptimizePipeline(ImageAPIOptimizePipelineInterface $pipeline) {
     if ($pipeline->id() != $pipeline->getOriginalId()) {
       // Loop through all image optimize pipelines looking for usages.
-
     }
   }
 
@@ -156,7 +153,7 @@ class ImageAPIOptimizePipeline extends ConfigEntityBase implements ImageAPIOptim
 
     // Let other modules update as necessary on flush.
     $module_handler = \Drupal::moduleHandler();
-    $module_handler->invokeAll('imageapi_optimize_pipeline_flush', array($this));
+    $module_handler->invokeAll('imageapi_optimize_pipeline_flush', [$this]);
 
     Cache::invalidateTags($this->getCacheTagsToInvalidate());
 
@@ -174,16 +171,42 @@ class ImageAPIOptimizePipeline extends ConfigEntityBase implements ImageAPIOptim
       return FALSE;
     }
 
-    foreach ($this->getProcessors() as $processor) {
-      $processor->applyToImage($image_uri);
-      // The file may have changed on disk after each processor has been
-      // applied, and PHP has a cache of file size information etc. so clear
-      // it here so that later calls to filesize() etc. get the correct
-      // information
-      clearstatcache();
+    if (count($this->getProcessors())) {
+      /*
+      Copy image to optimize to a temp location so that:
+      1. It's always a local image.
+      2. The filename is only ascii characters.
+      3. Multiple pipelines can be applied to the same image at the same time.
+      */
+      $file_extension = substr(strrchr($image_uri,'.'),1);
+      $temp_image_uri_base = \Drupal::service('file_system')->tempnam('temporary://', 'image_api_optimize_' . $this->id());
+      // Ensure this file is cleaned up at the end of the request.
+      $this->temporaryFiles[] = $temp_image_uri_base;
+      // Copy the file we are trying to optimize to the temporary location.
+      file_unmanaged_copy($image_uri, $temp_image_uri_base, FILE_EXISTS_REPLACE);
+
+      // Some processors require the correct file extension, add that on.
+      $temp_image_uri = $temp_image_uri_base . '.' .$file_extension;
+      file_unmanaged_move($temp_image_uri_base, $temp_image_uri);
+      // Ensure this file is cleaned up at the end of the request.
+      $this->temporaryFiles[] = $temp_image_uri;
+      $image_changed = FALSE;
+
+      foreach ($this->getProcessors() as $processor) {
+        $image_changed = $processor->applyToImage($temp_image_uri) || $image_changed;
+        // The file may have changed on disk after each processor has been
+        // applied, and PHP has a cache of file size information etc. so clear
+        // it here so that later calls to filesize() etc. get the correct
+        // information.
+        clearstatcache();
+      }
+
+      if ($image_changed) {
+        // Copy the temporary file back over the original image.
+        file_unmanaged_move($temp_image_uri, $image_uri, FILE_EXISTS_REPLACE);
+      }
     }
   }
-
 
   /**
    * {@inheritdoc}
@@ -206,7 +229,7 @@ class ImageAPIOptimizePipeline extends ConfigEntityBase implements ImageAPIOptim
    */
   public function getProcessors() {
     if (!$this->processorsCollection) {
-      $this->processorsCollection = new ImageAPIOptimizeProcessorPluginCollection($this->getImageAPIOptimizeProcessorPluginManager(), $this->processors);
+      $this->processorsCollection = $this->getProcessorsCollection();
       $this->processorsCollection->sort();
     }
     return $this->processorsCollection;
@@ -215,8 +238,15 @@ class ImageAPIOptimizePipeline extends ConfigEntityBase implements ImageAPIOptim
   /**
    * {@inheritdoc}
    */
+  public function getProcessorsCollection() {
+    return new ImageAPIOptimizeProcessorPluginCollection($this->getImageAPIOptimizeProcessorPluginManager(), $this->processors);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPluginCollections() {
-    return array('processors' => $this->getProcessors());
+    return ['processors' => $this->getProcessors()];
   }
 
   /**
@@ -261,4 +291,16 @@ class ImageAPIOptimizePipeline extends ConfigEntityBase implements ImageAPIOptim
   protected function getImageAPIOptimizeProcessorPluginManager() {
     return \Drupal::service('plugin.manager.imageapi_optimize.processor');
   }
+
+  /**
+   * Clean up any temporary files created in optimization.
+   */
+  public function __destruct() {
+    foreach ($this->temporaryFiles as $file) {
+      if (file_exists($file)) {
+        file_unmanaged_delete($file);
+      }
+    }
+  }
+
 }

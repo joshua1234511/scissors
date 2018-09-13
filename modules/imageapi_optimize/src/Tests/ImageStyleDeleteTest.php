@@ -2,11 +2,15 @@
 
 namespace Drupal\imageapi_optimize\Tests;
 
+use Drupal\Tests\image\Functional\ImageStyleDeleteTest as OriginalImageStyleDeleteTest;
+
 /**
- * Tests creation, deletion, and editing of image styles and effects.
+ * Tests image style deletion using the UI.
  *
  * @group image
  */
-class ImageStyleDeleteTest extends \Drupal\Tests\image\Functional\ImageStyleDeleteTest {
-  public static $modules = array('imageapi_optimize',);
+class ImageStyleDeleteTest extends OriginalImageStyleDeleteTest {
+
+  public static $modules = ['node', 'image', 'field_ui', 'image_module_test', 'imageapi_optimize'];
+
 }

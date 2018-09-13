@@ -2,11 +2,15 @@
 
 namespace Drupal\imageapi_optimize\Tests;
 
+use Drupal\Tests\image\Functional\ImageFieldValidateTest as OriginalImageFieldValidateTest;
+
 /**
- * Tests creation, deletion, and editing of image styles and effects.
+ * Tests validation functions such as min/max resolution.
  *
  * @group image
  */
-class ImageFieldValidateTest extends \Drupal\image\Tests\ImageFieldValidateTest {
-  public static $modules = array('imageapi_optimize',);
+class ImageFieldValidateTest extends OriginalImageFieldValidateTest {
+
+  public static $modules = ['node', 'image', 'field_ui', 'image_module_test', 'imageapi_optimize'];
+
 }
