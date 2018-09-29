@@ -34,10 +34,11 @@ class Messages extends Secure_Controller
 		$message = $this->input->post('message');
 
 		$response = $this->sms_lib->sendSMS($phone, $message);
-
 		if($response)
 		{
-			echo json_encode(array('success' => TRUE, 'message' => $this->lang->line('messages_successfully_sent') . ' ' . $phone));
+			if(isset($response->status) && $response->status == 'success')
+				echo json_encode(array('success' => TRUE, 'message' => $this->lang->line('messages_successfully_sent') . ' ' . $phone));
+			else echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('messages_unsuccessfully_sent') . ' ' . $phone));
 		}
 		else
 		{

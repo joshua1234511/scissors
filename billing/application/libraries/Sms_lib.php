@@ -35,22 +35,28 @@ class Sms_lib
 		else
 		{
 			$response = TRUE;
-
-			// make sure passed string is url encoded
 			$message = rawurlencode($message);
+			$apiKey = urlencode($password);
+			$numbers = array($phone);
+			$sender = urlencode($originator);
+			$numbers = implode(',', $numbers);
+			$data = array('apikey' => $apiKey, 'numbers' => $numbers, "sender" => $sender, "message" => $message);
+			$ch = curl_init('https://api.textlocal.in/send/');
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			$response = json_decode(curl_exec($ch));
+			curl_close($ch);
 
-			// add call to send a message via 3rd party API here
-			// Some examples
+			
+			// $url = "https://www.fast2sms.com/dev/bulk?authorization=".$password."&sender_id=".$originator."&message=".$message."&language=english&route=p&numbers=".$phone."&flash=1";
 
-			/*
-			$url = "http://xxx.xxx.xxx.xxx/send_sms?username=$username&password=$password&src=$originator&dst=$phone&msg=$message&dr=1";
-
-			$c = curl_init();
-			curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($c, CURLOPT_URL, $url);
-			$response = curl_exec($c);
-			curl_close($c);
-			*/
+			// $c = curl_init();
+			// curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+			// curl_setopt($c, CURLOPT_URL, $url);
+			// $response = curl_exec($c);
+			// curl_close($c);
+			
 
 			// This is a textmarketer.co.uk API call, see: http://wiki.textmarketer.co.uk/display/DevDoc/Text+Marketer+Developer+Documentation+-+Wiki+Home
 			/*
