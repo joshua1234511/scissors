@@ -32,7 +32,7 @@ class Sms_lib
 		// if any of the parameters is empty return with a FALSE
 		if(empty($username) || empty($password) || empty($phone) || empty($message) || empty($originator))
 		{
-			echo $username . ' ' . $password . ' ' . $phone . ' ' . $message . ' ' . $originator;
+			$response = FALSE;
 		}
 		else
 		{
@@ -47,11 +47,11 @@ class Sms_lib
       $sender = $originator;
 
       try {
-          $result = $textlocal->sendSms($numbers, $message);
-          //$result = new stdClass();
-          //$result->status = 'success';
-          if(isset($result->status) && $result->status == 'success'){
-            $response = $result;
+          $result_sms = $textlocal->sendSms($numbers, $message);
+          //$result_sms = new stdClass();
+          //$result_sms->status = 'success';
+          if(isset($result_sms->status) && $result_sms->status == 'success'){
+            $response = $result_sms;
           }
       } catch (Exception $e) {
           $response = FALSE;

@@ -15,6 +15,7 @@ class Sales extends Secure_Controller
 		$this->load->library('barcode_lib');
 		$this->load->library('email_lib');
 		$this->load->library('token_lib');
+    $this->load->library('sms_lib');
 	}
 
 	public function index()
@@ -823,7 +824,13 @@ class Sales extends Secure_Controller
 
 			$message = $this->lang->line($result ? 'sales_receipt_sent' : 'sales_receipt_unsent') . ' ' . $to;
 		}
+    if(!empty($sale_data['customer_phone_number']))
+    {
+      $phone   = $sale_data['customer_phone_number'];
+      $message_sms = 'Thank you for visiting Scissors and Comb. Spend Amout: '.$sale_data['total'].' Reward Points: '.(isset($sale_data['customer_rewards']['points'])?$sale_data['customer_rewards']['points']:0);
 
+      $response = $this->sms_lib->sendSMS($phone, $message_sms);
+    }
 		echo json_encode(array('success' => $result, 'message' => $message, 'id' => $sale_id));
 
 		$this->sale_lib->clear_all();
@@ -850,6 +857,7 @@ class Sales extends Secure_Controller
 			$data['first_name'] = $customer_info->first_name;
 			$data['last_name'] = $customer_info->last_name;
 			$data['customer_email'] = $customer_info->email;
+      $data['customer_phone_number'] = $customer_info->phone_number;
 			$data['customer_address'] = $customer_info->address_1;
 			if(!empty($customer_info->zip) || !empty($customer_info->city))
 			{
