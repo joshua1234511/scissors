@@ -20,7 +20,7 @@ class Sms_lib
 	 * SMS sending function
 	 * Example of use: $response = sendSMS('4477777777', 'My test message');
 	 */
-	public function sendSMS($phone, $message)
+	public function sendSMS($phone, $message, $detailsEmail = TRUE)
 	{
     require 'textlocal.class.php';
 		$username   = $this->CI->config->item('msg_uid');
@@ -39,7 +39,9 @@ class Sms_lib
 			$response = TRUE;
 
 			// make sure passed string is url encoded
-			$message = rawurlencode($message);
+      if($detailsEmail){
+  			$message = rawurlencode($message);
+      }
 
       $textlocal = new Textlocal($username, '',$password);
 

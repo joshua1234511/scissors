@@ -827,9 +827,9 @@ class Sales extends Secure_Controller
     if(!empty($sale_data['customer_phone_number']))
     {
       $phone   = $sale_data['customer_phone_number'];
-      $message_sms = 'Thank you for visiting Scissors and Comb. Spend Amout: '.$sale_data['total'].' Reward Points: '.(isset($sale_data['customer_rewards']['points'])?$sale_data['customer_rewards']['points']:0);
+      $message_sms = 'Thank you for visiting Scissors and Comb. Spend Amout: '.$sale_data['total'].' Available Reward Points: '.(isset($sale_data['customer_rewards']['points'])?$sale_data['customer_rewards']['points']:0);
 
-      $response = $this->sms_lib->sendSMS($phone, $message_sms);
+      $response = $this->sms_lib->sendSMS($phone, $message_sms, FALSE);
     }
 		echo json_encode(array('success' => $result, 'message' => $message, 'id' => $sale_id));
 
