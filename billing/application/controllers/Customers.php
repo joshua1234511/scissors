@@ -5,21 +5,16 @@ require_once("Persons.php");
 class Customers extends Persons
 {
 	private $_list_id;
-	private $apiKey;
-	private $group_id;
 
 	public function __construct()
 	{
 		parent::__construct('customers');
 
 		$this->load->library('mailchimp_lib');
-		$this->load->library('sms_lib');
 
 		$CI =& get_instance();
 
 		$this->_list_id = $CI->encryption->decrypt($CI->Appconfig->get('mailchimp_list_id'));
-		$this->apiKey = urlencode($CI->encryption->decrypt($CI->Appconfig->get('msg_pwd')));
-		$this->group_id = $CI->Appconfig->get('msg_uid');
 	}
 
 	public function index()
@@ -275,18 +270,6 @@ class Customers extends Persons
 			// save customer to Mailchimp selected list
 			$this->mailchimp_lib->addOrUpdateMember($this->_list_id, $email, $first_name, $last_name, $this->input->post('mailchimp_status'), array('vip' => $this->input->post('mailchimp_vip') != NULL));
 
-			$contacts = array(array('number' => $person_data['phone_number'], 'first_name' => $person_data['first_name'], 'last_name' => $person_data['last_name'], 'custom1' => $person_data['email']));
-			// Prepare data for POST request
-			$data = array('apikey' => $this->apiKey, 'group_id' => $this->group_id, 'contacts' => json_encode($contacts));
-			// Send the POST request with cURL
-			$ch = curl_init('https://api.textlocal.in/create_contacts_bulk/');
-			curl_setopt($ch, CURLOPT_POST, true);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			$response = curl_exec($ch);
-			curl_close($ch);
-			// Process your response here
-			//echo $response;
 			// New customer
 			if($customer_id == -1)
 			{

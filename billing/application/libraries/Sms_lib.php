@@ -13,6 +13,7 @@ class Sms_lib
   	public function __construct()
 	{
 		$this->CI =& get_instance();
+    //$this->load->library('Textlocal');
 	}
 
 	/*
@@ -21,6 +22,7 @@ class Sms_lib
 	 */
 	public function sendSMS($phone, $message)
 	{
+    require 'textlocal.class.php';
 		$username   = $this->CI->config->item('msg_uid');
 		$password   = $this->CI->encryption->decrypt($this->CI->config->item('msg_pwd'));
 		$originator = $this->CI->config->item('msg_src');
@@ -30,41 +32,30 @@ class Sms_lib
 		// if any of the parameters is empty return with a FALSE
 		if(empty($username) || empty($password) || empty($phone) || empty($message) || empty($originator))
 		{
-			//echo $username . ' ' . $password . ' ' . $phone . ' ' . $message . ' ' . $originator;
+			echo $username . ' ' . $password . ' ' . $phone . ' ' . $message . ' ' . $originator;
 		}
 		else
 		{
 			$response = TRUE;
+
+			// make sure passed string is url encoded
 			$message = rawurlencode($message);
-			$apiKey = urlencode($password);
-			$numbers = array($phone);
-			$sender = urlencode($originator);
-			$numbers = implode(',', $numbers);
-			$data = array('apikey' => $apiKey, 'numbers' => $numbers, "sender" => $sender, "message" => $message);
-			$ch = curl_init('https://api.textlocal.in/send/');
-			curl_setopt($ch, CURLOPT_POST, true);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			$response = json_decode(curl_exec($ch));
-			curl_close($ch);
 
-			
-			// $url = "https://www.fast2sms.com/dev/bulk?authorization=".$password."&sender_id=".$originator."&message=".$message."&language=english&route=p&numbers=".$phone."&flash=1";
+      $textlocal = new Textlocal($username, '',$password);
 
-			// $c = curl_init();
-			// curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-			// curl_setopt($c, CURLOPT_URL, $url);
-			// $response = curl_exec($c);
-			// curl_close($c);
-			
+      $numbers = array($phone);
+      $sender = $originator;
 
-			// This is a textmarketer.co.uk API call, see: http://wiki.textmarketer.co.uk/display/DevDoc/Text+Marketer+Developer+Documentation+-+Wiki+Home
-			/*
-			$url = 'https://api.textmarketer.co.uk/gateway/'."?username=$username&password=$password&option=xml";
-			$url .= "&to=$phone&message=".urlencode($message).'&orig='.urlencode($originator);
-			$fp = fopen($url, 'r');
-			$response = fread($fp, 1024);
-			*/
+      try {
+          $result = $textlocal->sendSms($numbers, $message);
+          //$result = new stdClass();
+          //$result->status = 'success';
+          if(isset($result->status) && $result->status == 'success'){
+            $response = $result;
+          }
+      } catch (Exception $e) {
+          $response = FALSE;
+      }
 		}
 
 		return $response;
