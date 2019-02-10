@@ -1,0 +1,6 @@
+name: Scissors and Comb Custom Module
+description: Custom module implementation
+package: Custom
+
+type: module
+core: 8.x

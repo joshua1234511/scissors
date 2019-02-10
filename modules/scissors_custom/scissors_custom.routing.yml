@@ -1,0 +1,8 @@
+scissors_custom.user_billing:
+  path: '/user/{user}/billing'
+  defaults:
+    _controller: '\Drupal\scissors_custom\Controller\BillingController::viewBilling'
+    _title: 'User billing'
+  requirements:
+    _permission: 'access content'
+    user: \d+
