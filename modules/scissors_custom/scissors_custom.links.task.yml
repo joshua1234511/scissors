@@ -1,0 +1,4 @@
+scissors_custom.user_billing:
+  route_name: scissors_custom.user_billing
+  base_route: entity.user.canonical
+  title: 'User Billing'

@@ -1,0 +1,4 @@
+scissors_custom.user_billing:
+  title: User Billing
+  parent: entity.user.canonical
+  route_name: scissors_custom.user_billing
