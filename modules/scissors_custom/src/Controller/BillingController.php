@@ -31,7 +31,7 @@ class BillingController extends ControllerBase
     $query->fields('p',['person_id']);
     $query->leftJoin('ospos_customers', 'c', 'p.person_id = c.person_id');
     $query->condition('c.person_id', '', '<>');
-    $query->fields('c'['person_id']);
+    $query->fields('c',['person_id']);
     $query->range(0,1);
     $result = $query->execute()->fetchField();
     if(!empty($result)){

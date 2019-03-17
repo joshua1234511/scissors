@@ -82,7 +82,7 @@ class MyAccountDetailsBlock extends BlockBase implements BlockPluginInterface {
       }
     }
     if(!empty($customerDetails)){
-      $o = '<div class="row">';
+      $o = '<div class="row"><div class="col-md-12">';
       foreach ($customerDetails as $key => $value) {
         if(is_array($value)){
           $o .= '<p><span>'.ucwords(str_replace('_', ' ', $key)).':</span> ';
@@ -92,7 +92,7 @@ class MyAccountDetailsBlock extends BlockBase implements BlockPluginInterface {
           $o .= '<p><span>'.ucwords(str_replace('_', ' ', $key)).':</span> '.$value.'</p>';
         }
       }
-      $o .= '</div>';
+      $o .= '</div></div>';
     }
     return array(
       '#markup' => $o,
